@@ -12,8 +12,8 @@ def submit():
     input_gender = request.form.get("gender")
     input_happiness = request.form.get("happy")
     if int(input_happiness) >= 0:
-        return render_template("hello.html", name=input_name, age=input_age, gender=input_gender, happy=input_happiness)
+        return render_template("happy.html", name=input_name, age=input_age, gender=input_gender, happy=input_happiness)
     else:
         return render_template("sad.html", name=input_name, age=input_age, gender=input_gender, happy=input_happiness)
-if __name__ == '__main__':  
-   app.run(host= "0.0.0.0",port=8000)  
+# if __name__ == '__main__':  
+#    app.run(host= "0.0.0.0",port=8000)  

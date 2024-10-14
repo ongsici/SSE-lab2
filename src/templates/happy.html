@@ -9,6 +9,19 @@
 		    text-align: center;
 		    margin-top: 50px;
 		}
+		.button {
+            padding: 10px 20px;
+            background-color: #04AA6D;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #04AA6D;
+        }
     	</style>
  </head>
  <body>
@@ -19,6 +32,8 @@
 	<p>Happiness Index: {{ happy }}</p>
 	<p>Since you're already happy, I'll save my joke for another day!</p>
 	<img src="../static/sloth.jpg" alt="Sloth" width="400">
+	<br><br>
+	<a href="/" class="button">Back to Home</a>
  </body>
 </html>
 
