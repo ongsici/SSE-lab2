@@ -3,21 +3,29 @@
 	<meta charset="UTF-8">
     	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>COMP70085 CW2</title>
-    	<style>
+    	<!-- <style>
         	body {
 		    font-family: Arial, sans-serif;
 		    text-align: center;
 		    margin-top: 50px;
 		}
-    	</style>
+    	</style> -->
  </head>
  <body>
- 	<h1>Hello world!</h1>
+ 	<h1 style="background-color:powderblue;">Hello world!</h1>
 	<form action="/submit" method="post">
 		<label for="namefield">Name:</label>
-		<input type="text" id="namefield" name="name">
+		<input type="text" id="namefield" name="name"><br><br>
 		<label for="agefield">Age:</label>
-		<input type="number" id="agefield" name="age">
+		<input type="number" min="0" id="agefield" name="age"><br>
+		<p>Gender:</p>
+		<input type="radio" id="malefield" name="gender" value="Male">
+		<label for="malefield">Male</label><br>
+		<input type="radio" id="femalefield" name="gender" value="Female">
+		<label for="femalefield">Female</label><br><br>
+		<label for="happinessfield">How happy are you today?</label>
+		<input type="range" id="happinessfield" name="happy" min="-10" max="10" value="0" oninput="rangeValue.innerText = this.value">
+		<p id="rangeValue">0</p><br>
 		<input type="submit" value="Submit">
 	</form>
  </body>
