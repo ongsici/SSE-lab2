@@ -27,7 +27,7 @@ jobs:
     - name: Install pytest
       run: pip install pytest
     - name: Run pytest
-      run: pytest test/test_app.py
+      run: pytest src/test_app.py
 
   deploy-to-impaas:
     needs: python-formatting

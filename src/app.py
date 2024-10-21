@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request
 app = Flask(__name__)
 
+
 def process_query(input):
     if input == "dinosaurs":
         return "Dinosaurs ruled the Earth 200 million years ago"
     else:
         return "Unknown"
+
 
 @app.route("/")
 def hello_world():
@@ -31,11 +33,9 @@ def submit():
                                gender=input_gender,
                                happy=input_happiness)
 
+
 @app.route("/query", methods=["GET"])
 def query():
-    q = request.args.get("q") 
+    q = request.args.get("q")
     return process_query(q)
         
-   
-# if __name__ == '__main__':
-#    app.run(host= "0.0.0.0",port=8000)
