@@ -3,6 +3,11 @@ app = Flask(__name__)
 
 
 def process_query(input):
+    if "plus" in input:
+        new_input = input.replace("?", "")
+        value1 = int(new_input.split(" ")[2])
+        value2 = int(new_input[:-1].split(" ")[4])
+        return str(value1+value2)
     if "numbers is the largest" in input:
         value = input[:-1].split(":")[-1].split(",")
         return max(value)
