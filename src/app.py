@@ -3,6 +3,9 @@ app = Flask(__name__)
 
 
 def process_query(input):
+    if "numbers is the largest" in input:
+        value = input[:-1].split(":")[-1].split(",")
+        return max(value)
     if "your name" in input:
         return "SiCi"
     if input == "dinosaurs":
