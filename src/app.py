@@ -22,7 +22,7 @@ def process_query(input):
         value = input.split(":")[-1].split(",")
         result = []
         for number in value:
-            number=number.strip()
+            number = number.strip()
             if is_square(int(number)) and is_cube(int(number)):
                 result.append(number)
         return ", ".join(result)
