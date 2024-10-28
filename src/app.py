@@ -35,11 +35,6 @@ def process_query(input):
         value2 = int(new_input.split(" ")[4])
         value3 = int(new_input.split(" ")[6])
         return str(value1+value2+value3)
-    # if "divided by" in input:
-    #     new_input = input.replace("?", "")
-    #     value1 = int(new_input.split(" ")[2])
-    #     value2 = int(new_input.split(" ")[5])
-    #     return str(value1/value2)
 
     if "numbers are primes" in input:
         input = input.replace("?", "")
