@@ -12,11 +12,18 @@ def is_cube(n):
 
 
 def process_query(input):
+    if "minus" in input:
+        new_input = input.replace("?", "")
+        value1 = int(new_input.split(" ")[2])
+        value2 = int(new_input.split(" ")[4])
+        return str(value1-value2)
+
     if "multiplied by" in input:
         new_input = input.replace("?", "")
         value1 = int(new_input.split(" ")[2])
         value2 = int(new_input.split(" ")[5])
         return str(value1*value2)
+    
     if "square and a cube" in input:
         input = input.replace("?", "")
         value = input.split(":")[-1].split(",")
@@ -26,17 +33,21 @@ def process_query(input):
             if is_square(int(number)) and is_cube(int(number)):
                 result.append(number)
         return ",".join(result)
+    
     if "plus" in input:
         new_input = input.replace("?", "")
         value1 = int(new_input.split(" ")[2])
         value2 = int(new_input.split(" ")[4])
         return str(value1+value2)
+    
     if "numbers is the largest" in input:
         input = input.replace("?", "")
         value = input.split(":")[-1].split(",")
         return max(value)
+    
     if "your name" in input:
         return "SiCi"
+    
     if input == "dinosaurs":
         return "Dinosaurs ruled the Earth 200 million years ago"
     else:
