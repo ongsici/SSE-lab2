@@ -28,13 +28,19 @@ def is_prime(n):
 
 
 def process_query(input):
+    # if "divided by" in input:
+    #     new_input = input.replace("?", "")
+    #     value1 = int(new_input.split(" ")[2])
+    #     value2 = int(new_input.split(" ")[5])
+    #     return str(value1/value2)
+
     if "numbers are primes" in input:
         input = input.replace("?", "")
         value = input.split(":")[-1].split(",")
         result = []
         for number in value:
             number = number.strip()
-            if is_prime(number):
+            if is_prime(int(number)):
                 result.append(number)
         return ",".join(result)
 
