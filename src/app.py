@@ -10,6 +10,11 @@ def is_cube(n):
 
 
 def process_query(input):
+    if "multipled by" in input:
+        new_input = input.replace("?", "")
+        value1 = int(new_input.split(" ")[2])
+        value2 = int(new_input.split(" ")[5])
+        return str(value1*value2)
     if "square and a cube" in input:
         input = input.replace("?", "")
         value = input.split(":")[-1].split(",")
