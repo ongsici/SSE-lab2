@@ -10,7 +10,7 @@ def process_query(input):
         return str(value1+value2)
     if "numbers is the largest" in input:
         input = input.replace("?", "")
-        value = input[:-1].split(":")[-1].split(",")
+        value = input.split(":")[-1].split(",")
         return max(value)
     if "your name" in input:
         return "SiCi"
