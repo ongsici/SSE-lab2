@@ -42,7 +42,7 @@ jobs:
       uses: /impaas/impaas-deploy@v3
       with:
         app-name: sco115-sse-lab2
-        deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN }}
+        deployment-token: ${{ secrets.IMPAAS_DEPLOY_TOKEN_TEST }}
         method: PLATFORM
 
   
