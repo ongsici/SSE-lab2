@@ -28,6 +28,13 @@ def is_prime(n):
 
 
 def process_query(input):
+    plus_count = input.count('plus')
+    if plus_count == 3:
+        new_input = input.replace("?", "")
+        value1 = int(new_input.split(" ")[2])
+        value2 = int(new_input.split(" ")[4])
+        value3 = int(new_input.split(" ")[6])
+        return str(value1+value2+value3)
     # if "divided by" in input:
     #     new_input = input.replace("?", "")
     #     value1 = int(new_input.split(" ")[2])
@@ -66,7 +73,7 @@ def process_query(input):
                 result.append(number)
         return ",".join(result)
     
-    if "plus" in input:
+    if plus_count == 2:
         new_input = input.replace("?", "")
         value1 = int(new_input.split(" ")[2])
         value2 = int(new_input.split(" ")[4])
