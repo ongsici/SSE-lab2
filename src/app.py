@@ -25,7 +25,7 @@ def process_query(input):
             number = number.strip()
             if is_square(int(number)) and is_cube(int(number)):
                 result.append(number)
-        return " ".join(result)
+        return ",".join(result)
     if "plus" in input:
         new_input = input.replace("?", "")
         value1 = int(new_input.split(" ")[2])
