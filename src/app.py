@@ -3,6 +3,8 @@ app = Flask(__name__)
 
 
 def process_query(input):
+    if "your name" in input:
+        return "SiCi"
     if input == "dinosaurs":
         return "Dinosaurs ruled the Earth 200 million years ago"
     else:
@@ -36,5 +38,5 @@ def submit():
 
 @app.route("/query", methods=["GET"])
 def query():
-    q = request.args.get("q")
+    q = request.args.get("q", "")
     return process_query(q)
