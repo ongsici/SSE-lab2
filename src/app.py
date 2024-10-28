@@ -1,9 +1,11 @@
+import math
 from flask import Flask, render_template, request
 app = Flask(__name__)
-import math 
+
 
 def is_square(n):
     return int(math.sqrt(n)) ** 2 == n
+
 
 def is_cube(n):
     return int(round(n ** (1/3))) ** 3 == n
@@ -24,7 +26,6 @@ def process_query(input):
             if is_square(int(number)) and is_cube(int(number)):
                 result.append(number)
         return ", ".join(result)
-
     if "plus" in input:
         new_input = input.replace("?", "")
         value1 = int(new_input.split(" ")[2])
