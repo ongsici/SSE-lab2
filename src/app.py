@@ -12,7 +12,7 @@ def is_cube(n):
 
 
 def process_query(input):
-    if "multipled by" in input:
+    if "multiplied by" in input:
         new_input = input.replace("?", "")
         value1 = int(new_input.split(" ")[2])
         value2 = int(new_input.split(" ")[5])
