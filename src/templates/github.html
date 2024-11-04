@@ -1,0 +1,56 @@
+<html>
+ <head>
+	<meta charset="UTF-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>COMP70085 CW5</title>
+    	<style>
+        	body {
+		    font-family: Arial, sans-serif;
+		    text-align: center;
+		    margin-top: 50px;
+		}
+            table {
+                width: 70%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+                
+    	</style>
+ </head>
+ <body>
+	<h1>Hello {{ name }}!</h1>
+
+    <h2>Latest Github Commit Details:</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Repository</th>
+                <th>Last Updated</th>
+                <th>Author</th>
+                <th>Latest Commit Hash</th>
+                <th>Latest Commmit Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for repo in data %}
+            <tr>
+                <td>{{ repo.repo_name }}</td>
+                <td>{{ repo.last_updated.strftime('%Y-%m-%d %H:%M:%S') }}</td>  
+                <td>{{ repo.author }} </td>
+                <td>{{ repo.hash }} </td>
+                <td>{{ repo.message }} </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+ </body>
+</html>
+

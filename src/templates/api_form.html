@@ -1,0 +1,29 @@
+<html>
+ <head>
+	<meta charset="UTF-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>COMP70085 CW5</title>
+    <style>
+		input[type=submit] {
+		background-color: #04AA6D;
+		border: none;
+		border-radius: 5px;
+		color: white;
+		padding: 10 20;
+		font-size: 16px;
+		text-decoration: none;
+		/* margin: 4px 2px; */
+		cursor: pointer;
+		}
+	</style>
+ </head>
+ <body>
+ 	<h1 style="background-color:powderblue;">Put the Github Username you want to find out more about!</h1>
+	<form action="/api_submit" method="post">
+		<label for="namefield">Github Username:</label>
+		<input type="text" id="namefield" name="name"><br><br>
+		<input type="submit" value="Submit">
+	</form>
+ </body>
+</html>
+
