@@ -58,6 +58,14 @@ def get_commit_info(repo_name):
         message = data[0]["commit"]["message"]
 
     return hash, last_commit_date, author, message
+
+def get_weather():
+    url = "https://api.open-meteo.com/v1/forecast?latitude=51.51&longitude=-0.13&current=temperature_2m"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data["current"]["temperature_2m"]
     
 @app.route("/api_submit", methods=["POST"])
 def api_submit():
@@ -65,6 +73,8 @@ def api_submit():
     repositories: List[RepoInfo] = []  
     url = f"https://api.github.com/users/{github_name}/repos"
     response = requests.get(url, headers=headers)
+
+    curr_temp = get_weather()
 
     if response.status_code == 200:
         repos = response.json()
@@ -81,7 +91,8 @@ def api_submit():
 
     return render_template("github.html",
                            name=github_name,
-                           data=repositories)
+                           data=repositories,
+                           temperature=curr_temp)
 
 
 @app.route("/query", methods=["GET"])

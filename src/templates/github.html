@@ -49,10 +49,41 @@
             border-color: #007BFF; /* Change border color on focus */
         }
                 
+        .temp-card {
+            background-color: #e0f7fa; /* Light blue background */
+            color: #00796b; /* Darker teal text */
+            padding: 20px;
+            border-radius: 8px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            margin: 20px auto;
+            font-family: Arial, sans-serif;
+        }
+        .temp-card h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        .temp-card .icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        .temp-icon {
+            width: 20%;
+            height: auto;
+            margin-bottom: 10px;
+        }
     	</style>
  </head>
  <body>
 	<h1 style="background-color:powderblue;">Hello {{ name }}!</h1>
+
+    <div class="temp-card">
+        <img src="{{ url_for('static', filename='temperature.png') }}" alt="Temperature Icon" class="temp-icon">
+        <!-- <div class="icon">🌡️</div> -->
+        <h3>Current Temperature in London</h3>
+        <h2>{{ temperature }}°C</h2>
+    </div>
 
     <div class="table">
         <h2>Latest Github Commit Details:</h2>
