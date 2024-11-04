@@ -1,5 +1,9 @@
 import math
+import requests
+from datetime import datetime
+from typing import List
 from flask import Flask, render_template, request
+from data_model.data_model import RepoInfo
 app = Flask(__name__)
 
 
@@ -93,6 +97,11 @@ def hello_world():
     return render_template("index.html")
 
 
+@app.route("/api")
+def hello_api():
+    return render_template("api_form.html")
+
+
 @app.route("/submit", methods=["POST"])
 def submit():
     input_name = request.form.get("name")
@@ -111,6 +120,43 @@ def submit():
                                age=input_age,
                                gender=input_gender,
                                happy=input_happiness)
+    
+def get_commit_info(repo_name):
+    url = f"https://api.github.com/repos/{repo_name}/commits"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        hash = data[0]["sha"]
+        last_commit_date = data[0]["commit"]["committer"]["date"]
+        author = data[0]["commit"]["author"]["name"]
+        message = data[0]["commit"]["message"]
+
+    return hash, last_commit_date, author, message
+    
+@app.route("/api_submit", methods=["POST"])
+def api_submit():
+    github_name = request.form.get("name")
+    repositories: List[RepoInfo] = []  
+    url = f"https://api.github.com/users/{github_name}/repos"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        repos = response.json()
+        for repo in repos:
+            hash, last_commit_date, author, message = get_commit_info(repo["full_name"])
+            repo_info = RepoInfo(
+                repo_name=repo["full_name"],
+                last_updated=datetime.fromisoformat(last_commit_date.replace("Z", "+00:00")),
+                hash = hash,
+                author = author,
+                message = message                
+            )
+            repositories.append(repo_info) 
+
+    return render_template("github.html",
+                           name=github_name,
+                           data=repositories)
 
 
 @app.route("/query", methods=["GET"])
