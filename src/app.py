@@ -1,11 +1,19 @@
 import math
 import requests
+import os
 from datetime import datetime
 from typing import List
 from flask import Flask, render_template, request
 from data_model.data_model import RepoInfo
+from dotenv import load_dotenv
 app = Flask(__name__)
 
+
+load_dotenv()
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+headers = {
+    "Authorization": f"token {GITHUB_TOKEN}"
+}
 
 def is_square(n):
     return int(math.sqrt(n)) ** 2 == n
@@ -123,7 +131,7 @@ def submit():
     
 def get_commit_info(repo_name):
     url = f"https://api.github.com/repos/{repo_name}/commits"
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
         data = response.json()
@@ -139,7 +147,7 @@ def api_submit():
     github_name = request.form.get("name")
     repositories: List[RepoInfo] = []  
     url = f"https://api.github.com/users/{github_name}/repos"
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
         repos = response.json()
