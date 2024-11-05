@@ -182,10 +182,6 @@ def fetch_weekly_commits(name, repo_name):
                                repo_info=repo_info_details,
                                week_labels=week_labels,
                                weekly_commit_num=commits_by_week)
-    
-    else:
-        return f"Error: Unable to fetch repository data. 
-        Status code: {repo_response.status_code}", 404
 
 
 @app.route("/query", methods=["GET"])
