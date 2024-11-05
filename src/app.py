@@ -1,4 +1,3 @@
-import math
 import requests
 import os
 from process_query import process_query
@@ -7,7 +6,6 @@ from typing import List
 from flask import Flask, render_template, request
 from data_model.data_model import RepoInfo, RepoInfoDetails
 from dotenv import load_dotenv
-import json
 app = Flask(__name__)
 
 
@@ -148,10 +146,8 @@ def get_commits_per_week(repo_owner, repo_name, creation_date):
 
 @app.route("/api_repo_info/<name>/<repo_name>", methods=["GET"])
 def fetch_weekly_commits(name, repo_name):
-    # Ensure that repo_name is URL safe if it contains slashes
     repo_full_name = f"{name}/{repo_name}"
 
-    # Get the repository creation date
     repo_url = f"https://api.github.com/repos/{repo_full_name}"
     repo_response = requests.get(repo_url)
 
@@ -170,15 +166,17 @@ def fetch_weekly_commits(name, repo_name):
             week_labels.append(f"{week_start.strftime('%Y-%m-%d')}")
             commits_by_week.append(commit_count)
 
+        # Convert creation_date to ISO format string for Pydantic
+        creation_date_str = creation_date.isoformat()
+
         # Create an instance of RepoInfoDetails
         repo_info_details = RepoInfoDetails(
             repo_name=repo_full_name,
-            creation_date=creation_date,
+            creation_date=creation_date_str,  # Use the string version here
             weekly_commit_num=commits_by_week,
             week_label=week_labels
         )
 
-        # Render the template with the commit data
         return render_template("repo_info.html",
                                name=repo_name,
                                repo_info=repo_info_details,
@@ -186,8 +184,8 @@ def fetch_weekly_commits(name, repo_name):
                                weekly_commit_num=commits_by_week)
     
     else:
-        return f"Error: Unable to fetch repository data. Status code: {repo_response.status_code}", 404
-
+        return f"Error: Unable to fetch repository data. 
+        Status code: {repo_response.status_code}", 404
 
 
 @app.route("/query", methods=["GET"])
