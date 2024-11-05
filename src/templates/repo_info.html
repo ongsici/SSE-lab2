@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Commits for {{ repo_info.repo_name }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        canvas {
+            max-width: 100%;  /* Responsive canvas */
+            height: 150px;    /* Fixed height */
+        }
+        .no-data {
+            color: red;
+            margin-top: 20px;
+        }
+        /* Increase font size for chart labels */
+        .chartjs-size-monitor {
+            font-size: larger;  /* Increase font size for labels */
+        }
+    </style>
+</head>
+<body>
+    <h1>Weekly Commits for {{ name }}</h1>
+    <canvas id="commitChart" width="300" height="150"></canvas>
+    <div class="no-data" id="no-data" style="display: none;">No commits found for this repository.</div>
+
+    <script>
+        // Pass the week labels and commit numbers from the Flask route
+        const weekLabels = JSON.parse('{{ week_labels|tojson|safe }}');
+        const weeklyCommits = JSON.parse('{{ weekly_commit_num|tojson|safe }}');
+
+        const ctx = document.getElementById('commitChart').getContext('2d');
+
+        // Only create the chart if there are commits to display
+        if (weeklyCommits.length > 0) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: weekLabels,
+                    datasets: [{
+                        label: 'Commits per Week',
+                        data: weeklyCommits,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Commits',
+                                font: {
+                                    size: 16, // Set font size for y-axis title
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14, // Set font size for y-axis ticks
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Weeks',
+                                font: {
+                                    size: 16, // Set font size for x-axis title
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14, // Set font size for x-axis ticks
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `Commits: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('commitChart').style.display = 'none';
+            document.getElementById('no-data').style.display = 'block'; // Show no data message
+        }
+    </script>
+</body>
+</html>

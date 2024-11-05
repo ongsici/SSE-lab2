@@ -146,10 +146,10 @@
     <br><br><br>
     <div class="dropdown">
         <label for="options" class="dropdown-label">Select which repo you want to find out more about:</label>
-        <select id="options" class="custom-select">
+        <select id="options" class="custom-select" onchange="location = this.value;">
             <option value="" disabled selected>Select an option</option>
             {% for repo in data %}
-                <option value="{{ repo.repo_name }}">{{ repo.repo_name }}</option>
+                <option value="{{ url_for('fetch_weekly_commits', name=repo.repo_name.split('/')[0], repo_name=repo.repo_name.split('/')[1]) }}">{{ repo.repo_name }}</option>
             {% endfor %}
         </select>
     </div>

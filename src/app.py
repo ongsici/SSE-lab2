@@ -2,11 +2,12 @@ import math
 import requests
 import os
 from process_query import process_query
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 from flask import Flask, render_template, request
-from data_model.data_model import RepoInfo
+from data_model.data_model import RepoInfo, RepoInfoDetails
 from dotenv import load_dotenv
+import json
 app = Flask(__name__)
 
 
@@ -72,6 +73,7 @@ def get_weather():
 
         return temperature, humidity, prep_prob, wind_speed
     
+
 @app.route("/api_submit", methods=["POST"])
 def api_submit():
     github_name = request.form.get("name")
@@ -101,6 +103,91 @@ def api_submit():
                            humidity = curr_humidity,
                            prep_prob = curr_prep_prob,
                            wind_speed = curr_wind_speed)
+
+
+def get_commits_per_week(repo_owner, repo_name, creation_date):
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits"
+    params = {
+        'per_page': 100,
+        'page': 1
+    }
+    commits_per_week = {}
+    now = datetime.now()
+
+    # Fetch commits until we reach the creation date
+    while True:
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            print(f"Error fetching data: {response.status_code}")
+            break
+
+        commits = response.json()
+        if not commits:
+            break  # No more commits to fetch
+
+        for commit in commits:
+            commit_date = commit['commit']['committer']['date']
+            commit_week = datetime.strptime(commit_date, "%Y-%m-%dT%H:%M:%SZ").date()
+            
+            if commit_week < creation_date.date():
+                continue
+            
+            # Calculate the start of the week (Monday)
+            week_start = commit_week - timedelta(days=commit_week.weekday())
+            
+            # Initialize the week in the dictionary if not present
+            if week_start not in commits_per_week:
+                commits_per_week[week_start] = 0
+            
+            commits_per_week[week_start] += 1
+
+        params['page'] += 1  # Move to the next page
+
+    return commits_per_week
+
+
+@app.route("/api_repo_info/<name>/<repo_name>", methods=["GET"])
+def fetch_weekly_commits(name, repo_name):
+    # Ensure that repo_name is URL safe if it contains slashes
+    repo_full_name = f"{name}/{repo_name}"
+
+    # Get the repository creation date
+    repo_url = f"https://api.github.com/repos/{repo_full_name}"
+    repo_response = requests.get(repo_url)
+
+    if repo_response.status_code == 200:
+        repo_data = repo_response.json()
+        creation_date = datetime.fromisoformat(repo_data["created_at"].replace("Z", "+00:00"))
+
+        # Get the commits per week since repository creation
+        commits_per_week = get_commits_per_week(name, repo_name, creation_date)
+
+        # Prepare the data for rendering
+        week_labels = []
+        commits_by_week = []
+        
+        for week_start, commit_count in sorted(commits_per_week.items()):
+            week_labels.append(f"{week_start.strftime('%Y-%m-%d')}")
+            commits_by_week.append(commit_count)
+
+        # Create an instance of RepoInfoDetails
+        repo_info_details = RepoInfoDetails(
+            repo_name=repo_full_name,
+            creation_date=creation_date,
+            weekly_commit_num=commits_by_week,
+            week_label=week_labels
+        )
+
+        # Render the template with the commit data
+        return render_template("repo_info.html",
+                               name=repo_name,
+                               repo_info=repo_info_details,
+                               week_labels=week_labels,
+                               weekly_commit_num=commits_by_week)
+    
+    else:
+        return f"Error: Unable to fetch repository data. Status code: {repo_response.status_code}", 404
+
 
 
 @app.route("/query", methods=["GET"])
