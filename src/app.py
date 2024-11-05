@@ -60,12 +60,17 @@ def get_commit_info(repo_name):
     return hash, last_commit_date, author, message
 
 def get_weather():
-    url = "https://api.open-meteo.com/v1/forecast?latitude=51.51&longitude=-0.13&current=temperature_2m"
+    url = "https://api.open-meteo.com/v1/forecast?latitude=51.51&longitude=-0.13&current=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m"
     response = requests.get(url)
 
     if response.status_code == 200:
         data = response.json()
-        return data["current"]["temperature_2m"]
+        temperature= data["current"]["temperature_2m"]
+        humidity = data["current"]["relative_humidity_2m"]
+        prep_prob = data["current"]["precipitation_probability"]
+        wind_speed = data["current"]["wind_speed_10m"]
+
+        return temperature, humidity, prep_prob, wind_speed
     
 @app.route("/api_submit", methods=["POST"])
 def api_submit():
@@ -74,7 +79,7 @@ def api_submit():
     url = f"https://api.github.com/users/{github_name}/repos"
     response = requests.get(url, headers=headers)
 
-    curr_temp = get_weather()
+    curr_temp, curr_humidity, curr_prep_prob, curr_wind_speed = get_weather()
 
     if response.status_code == 200:
         repos = response.json()
@@ -92,7 +97,10 @@ def api_submit():
     return render_template("github.html",
                            name=github_name,
                            data=repositories,
-                           temperature=curr_temp)
+                           temperature=curr_temp,
+                           humidity = curr_humidity,
+                           prep_prob = curr_prep_prob,
+                           wind_speed = curr_wind_speed)
 
 
 @app.route("/query", methods=["GET"])
