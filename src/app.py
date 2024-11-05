@@ -87,10 +87,11 @@ def api_submit():
             hash, last_commit_date, author, message = get_commit_info(repo["full_name"])
             repo_info = RepoInfo(
                 repo_name=repo["full_name"],
-                last_updated=datetime.fromisoformat(last_commit_date.replace("Z", "+00:00")),
-                hash = hash,
-                author = author,
-                message = message                
+                last_updated=datetime.fromisoformat(last_commit_date
+                                                    .replace("Z", "+00:00")),
+                hash=hash,
+                author=author,
+                message=message                
             )
             repositories.append(repo_info) 
 
@@ -98,9 +99,9 @@ def api_submit():
                            name=github_name,
                            data=repositories,
                            temperature=curr_temp,
-                           humidity = curr_humidity,
-                           prep_prob = curr_prep_prob,
-                           wind_speed = curr_wind_speed)
+                           humidity=curr_humidity,
+                           prep_prob=curr_prep_prob,
+                           wind_speed=curr_wind_speed)
 
 
 def get_commits_per_week(repo_owner, repo_name, creation_date):
@@ -110,7 +111,6 @@ def get_commits_per_week(repo_owner, repo_name, creation_date):
         'page': 1
     }
     commits_per_week = {}
-    now = datetime.now()
 
     # Fetch commits until we reach the creation date
     while True:
@@ -126,17 +126,17 @@ def get_commits_per_week(repo_owner, repo_name, creation_date):
         for commit in commits:
             commit_date = commit['commit']['committer']['date']
             commit_week = datetime.strptime(commit_date, "%Y-%m-%dT%H:%M:%SZ").date()
-            
+
             if commit_week < creation_date.date():
                 continue
-            
+
             # Calculate the start of the week (Monday)
             week_start = commit_week - timedelta(days=commit_week.weekday())
-            
+
             # Initialize the week in the dictionary if not present
             if week_start not in commits_per_week:
                 commits_per_week[week_start] = 0
-            
+
             commits_per_week[week_start] += 1
 
         params['page'] += 1  # Move to the next page
@@ -153,7 +153,8 @@ def fetch_weekly_commits(name, repo_name):
 
     if repo_response.status_code == 200:
         repo_data = repo_response.json()
-        creation_date = datetime.fromisoformat(repo_data["created_at"].replace("Z", "+00:00"))
+        creation_date = datetime.fromisoformat(repo_data["created_at"]
+                                               .replace("Z", "+00:00"))
 
         # Get the commits per week since repository creation
         commits_per_week = get_commits_per_week(name, repo_name, creation_date)
@@ -161,7 +162,7 @@ def fetch_weekly_commits(name, repo_name):
         # Prepare the data for rendering
         week_labels = []
         commits_by_week = []
-        
+
         for week_start, commit_count in sorted(commits_per_week.items()):
             week_labels.append(f"{week_start.strftime('%Y-%m-%d')}")
             commits_by_week.append(commit_count)
