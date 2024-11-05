@@ -16,3 +16,7 @@ class RepoInfoDetails(BaseModel):
     creation_date: str
     weekly_commit_num: List[int]
     week_label: List[str]
+    commits_by_day_counts: List[int]
+    commits_by_hour_counts: List[int]
+    contributions_by_contributors: List[str]
+    contribution_counts: List[int]

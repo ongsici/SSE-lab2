@@ -13,98 +13,218 @@
         h1 {
             margin-bottom: 20px;
         }
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 20px; /* Space between charts */
+            height: 70vh; /* Adjust height as needed */
+        }
         canvas {
-            max-width: 100%;  /* Responsive canvas */
-            height: 150px;    /* Fixed height */
+            width: 100% !important;  /* Set canvas width smaller */
+            height: 100% !important; /* Set canvas height smaller */
         }
         .no-data {
             color: red;
             margin-top: 20px;
         }
-        /* Increase font size for chart labels */
-        .chartjs-size-monitor {
-            font-size: larger;  /* Increase font size for labels */
-        }
     </style>
 </head>
 <body>
-    <h1>Weekly Commits for {{ name }}</h1>
-    <canvas id="commitChart" width="300" height="150"></canvas>
+    <h1>Interesting statistics for repository: {{ name }}</h1>
+    <div class="chart-container">
+        <canvas id="commitChart"></canvas>
+        <canvas id="contributionsChart"></canvas> <!-- New canvas for contributions -->
+        <canvas id="commitsByDayChart"></canvas>
+        <canvas id="commitsByHourChart"></canvas>
+    </div>
     <div class="no-data" id="no-data" style="display: none;">No commits found for this repository.</div>
 
     <script>
-        // Pass the week labels and commit numbers from the Flask route
         const weekLabels = JSON.parse('{{ week_labels|tojson|safe }}');
         const weeklyCommits = JSON.parse('{{ weekly_commit_num|tojson|safe }}');
+        const commitsByDayCounts = JSON.parse('{{ commits_by_day_counts|tojson|safe }}');
+        const commitsByHourCounts = JSON.parse('{{ commits_by_hour_counts|tojson|safe }}');
+        const contributors = JSON.parse('{{ contributions_by_contributors|tojson|safe }}');
+        const contributionCounts = JSON.parse('{{ contribution_counts|tojson|safe }}');
 
-        const ctx = document.getElementById('commitChart').getContext('2d');
-
-        // Only create the chart if there are commits to display
-        if (weeklyCommits.length > 0) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: weekLabels,
-                    datasets: [{
-                        label: 'Commits per Week',
-                        data: weeklyCommits,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 2,
-                        fill: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Commits',
-                                font: {
-                                    size: 16, // Set font size for y-axis title
-                                }
-                            },
-                            ticks: {
-                                font: {
-                                    size: 14, // Set font size for y-axis ticks
-                                }
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Weeks',
-                                font: {
-                                    size: 16, // Set font size for x-axis title
-                                }
-                            },
-                            ticks: {
-                                font: {
-                                    size: 14, // Set font size for x-axis ticks
-                                }
+        // Commit Chart
+        const ctxCommit = document.getElementById('commitChart').getContext('2d');
+        new Chart(ctxCommit, {
+            type: 'line',
+            data: {
+                labels: weekLabels,
+                datasets: [{
+                    label: 'Commits per Week',
+                    data: weeklyCommits,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 14, // Increased font size for x-axis labels
                             }
                         }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return `Commits: ${tooltipItem.raw}`;
-                                }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 14 // Increased font size for legend labels
                             }
                         }
                     }
                 }
-            });
-        } else {
-            document.getElementById('commitChart').style.display = 'none';
-            document.getElementById('no-data').style.display = 'block'; // Show no data message
-        }
+            }
+        });
+
+        // Contributions by Contributor Chart
+        const ctxContributions = document.getElementById('contributionsChart').getContext('2d');
+        new Chart(ctxContributions, {
+            type: 'bar',
+            data: {
+                labels: contributors,
+                datasets: [{
+                    label: 'Contributions by Contributor',
+                    data: contributionCounts,
+                    backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 14 // Increased font size for x-axis labels
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 14 // Increased font size for legend labels
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Commits by Day Chart
+        const ctxCommitsByDay = document.getElementById('commitsByDayChart').getContext('2d');
+        new Chart(ctxCommitsByDay, {
+            type: 'bar',
+            data: {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                datasets: [{
+                    label: 'Commits by Day',
+                    data: commitsByDayCounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 14 // Increased font size for x-axis labels
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 14 // Increased font size for legend labels
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Commits by Hour Chart
+        const ctxCommitsByHour = document.getElementById('commitsByHourChart').getContext('2d');
+        new Chart(ctxCommitsByHour, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                datasets: [{
+                    label: 'Commits by Hour',
+                    data: commitsByHourCounts,
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 2,
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Commits',
+                            font: {
+                                size: 16,
+                            }
+                        },
+                        ticks: {
+                            font: {
+                                size: 14, // Increased font size for y-axis ticks
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Hour of the Day',
+                            font: {
+                                size: 16,
+                            }
+                        },
+                        ticks: {
+                            font: {
+                                size: 14, // Increased font size for x-axis ticks
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 14 // Increased font size for legend labels
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return `Commits: ${tooltipItem.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>

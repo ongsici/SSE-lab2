@@ -6,6 +6,7 @@ from typing import List
 from flask import Flask, render_template, request
 from data_model.data_model import RepoInfo, RepoInfoDetails
 from dotenv import load_dotenv
+from typing import List, Dict, Tuple
 app = Flask(__name__)
 
 
@@ -104,13 +105,18 @@ def api_submit():
                            wind_speed=curr_wind_speed)
 
 
-def get_commits_per_week(repo_owner, repo_name, creation_date):
+def get_commit_data(repo_owner: str, repo_name: str, creation_date: datetime) -> Tuple[Dict, Dict, Dict, List[int], List[int], Dict[str, int]]:
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits"
     params = {
         'per_page': 100,
         'page': 1
     }
+
+    # Initialize standard dictionaries
     commits_per_week = {}
+    commits_by_day = {day: 0 for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']}
+    commits_by_hour = {hour: 0 for hour in range(24)}
+    contributions_by_contributor = {}  # New dictionary for contributions by contributor
 
     # Fetch commits until we reach the creation date
     while True:
@@ -137,15 +143,28 @@ def get_commits_per_week(repo_owner, repo_name, creation_date):
             if week_start not in commits_per_week:
                 commits_per_week[week_start] = 0
 
+            # Increment counts
             commits_per_week[week_start] += 1
+
+            # Track commits by day of the week
+            commit_day = datetime.strptime(commit_date, "%Y-%m-%dT%H:%M:%SZ").strftime('%A')
+            commits_by_day[commit_day] += 1
+
+            # Track commits by hour of the day
+            commit_hour = datetime.strptime(commit_date, "%Y-%m-%dT%H:%M:%SZ").hour
+            commits_by_hour[commit_hour] += 1
+
+            # Track contributions by contributor
+            committer_name = commit['commit']['committer']['name']
+            contributions_by_contributor[committer_name] = contributions_by_contributor.get(committer_name, 0) + 1
 
         params['page'] += 1  # Move to the next page
 
-    return commits_per_week
+    return commits_per_week, commits_by_day, commits_by_hour, contributions_by_contributor
 
 
 @app.route("/api_repo_info/<name>/<repo_name>", methods=["GET"])
-def fetch_weekly_commits(name, repo_name):
+def fetch_repo_info(name: str, repo_name: str):
     repo_full_name = f"{name}/{repo_name}"
 
     repo_url = f"https://api.github.com/repos/{repo_full_name}"
@@ -153,19 +172,28 @@ def fetch_weekly_commits(name, repo_name):
 
     if repo_response.status_code == 200:
         repo_data = repo_response.json()
-        creation_date = datetime.fromisoformat(repo_data["created_at"]
-                                               .replace("Z", "+00:00"))
+        creation_date = datetime.fromisoformat(repo_data["created_at"].replace("Z", "+00:00"))
 
-        # Get the commits per week since repository creation
-        commits_per_week = get_commits_per_week(name, repo_name, creation_date)
+        # Get all commit data
+        commits_per_week, commits_by_day, commits_by_hour, contributions_by_contributor = get_commit_data(name, repo_name, creation_date)
 
-        # Prepare the data for rendering
+        # Prepare data for rendering
         week_labels = []
         commits_by_week = []
 
-        for week_start, commit_count in sorted(commits_per_week.items()):
+        for week_start in sorted(commits_per_week.keys()):
             week_labels.append(f"{week_start.strftime('%Y-%m-%d')}")
-            commits_by_week.append(commit_count)
+            commits_by_week.append(commits_per_week[week_start])
+
+        # Process commits by day of the week
+        commits_by_day_counts = [commits_by_day[day] for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']]
+
+        # Process commits by hour of the day
+        commits_by_hour_counts = [commits_by_hour[hour] for hour in range(24)]
+
+        # Prepare data for contributions by contributor
+        contributors = list(contributions_by_contributor.keys())
+        contribution_counts = list(contributions_by_contributor.values())
 
         # Convert creation_date to ISO format string for Pydantic
         creation_date_str = creation_date.isoformat()
@@ -173,16 +201,24 @@ def fetch_weekly_commits(name, repo_name):
         # Create an instance of RepoInfoDetails
         repo_info_details = RepoInfoDetails(
             repo_name=repo_full_name,
-            creation_date=creation_date_str,  # Use the string version here
+            creation_date=creation_date_str,
             weekly_commit_num=commits_by_week,
-            week_label=week_labels
+            week_label=week_labels,
+            commits_by_day_counts=commits_by_day_counts,
+            commits_by_hour_counts=commits_by_hour_counts,
+            contributions_by_contributors=contributors,  # New field for contributors
+            contribution_counts=contribution_counts,      # New field for contribution counts
         )
 
         return render_template("repo_info.html",
                                name=repo_name,
                                repo_info=repo_info_details,
                                week_labels=week_labels,
-                               weekly_commit_num=commits_by_week)
+                               weekly_commit_num=commits_by_week,
+                               commits_by_day_counts=commits_by_day_counts,
+                               commits_by_hour_counts=commits_by_hour_counts,
+                               contributions_by_contributors=contributors,
+                               contribution_counts=contribution_counts)
 
 
 @app.route("/query", methods=["GET"])
