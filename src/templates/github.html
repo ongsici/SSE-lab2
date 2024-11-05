@@ -46,29 +46,36 @@
 
         .custom-select:focus {
             outline: none;
-            border-color: #007BFF; /* Change border color on focus */
+            border-color: #007BFF;
         }
                 
-        .temp-card {
-            background-color: #e0f7fa; /* Light blue background */
-            color: #00796b; /* Darker teal text */
+        .weather-cards {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .weather-card {
+            background-color: #e0f7fa; 
+            color: #00796b; 
             padding: 20px;
             border-radius: 8px;
             width: 250px;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
             margin: 20px auto;
             font-family: Arial, sans-serif;
         }
-        .temp-card h2 {
+        .weather-card h2 {
             font-size: 1.5em;
             margin-bottom: 5px;
         }
-        .temp-card .icon {
+        .weather-card .icon {
             font-size: 50px;
             margin-bottom: 10px;
         }
-        .temp-icon {
+        .weather-icon {
             width: 20%;
             height: auto;
             margin-bottom: 10px;
@@ -78,11 +85,37 @@
  <body>
 	<h1 style="background-color:powderblue;">Hello {{ name }}!</h1>
 
-    <div class="temp-card">
-        <img src="{{ url_for('static', filename='temperature.png') }}" alt="Temperature Icon" class="temp-icon">
-        <!-- <div class="icon">🌡️</div> -->
-        <h3>Current Temperature in London</h3>
-        <h2>{{ temperature }}°C</h2>
+    <h2>Current Weather Conditions in London</h2>
+
+    <div class="weather-cards">
+        <!-- Temperature Card -->
+        <div class="weather-card">
+            <img src="{{ url_for('static', filename='temperature.png') }}" alt="Temperature Icon" class="weather-icon">
+            <h3>Temperature</h3>
+            <h2>{{ temperature }}°C</h2>
+        </div>
+    
+        <!-- Humidity Card -->
+        <div class="weather-card">
+            <img src="{{ url_for('static', filename='humidity.png') }}" alt="Humidity Icon" class="weather-icon">
+            <h3>Humidity</h3>
+            <h2>{{ humidity }}%</h2>
+        </div>
+    
+        <!-- Wind Speed Card -->
+        <div class="weather-card">
+            <img src="{{ url_for('static', filename='wind.png') }}" alt="Wind Speed Icon" class="weather-icon">
+            <h3>Wind Speed</h3>
+            <h2>{{ wind_speed }} km/h</h2>
+        </div>
+
+        <!-- Precipitation Probability Card -->
+        <div class="weather-card">
+            <img src="{{ url_for('static', filename='precipitation.png') }}" alt="Wind Speed Icon" class="weather-icon">
+            <h3>Precipitation Probability</h3>
+            <h2>{{ prep_prob }} %</h2>
+        </div>
+        
     </div>
 
     <div class="table">
