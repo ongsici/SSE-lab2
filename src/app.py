@@ -2,7 +2,7 @@ import requests
 import os
 from process_query import process_query
 from datetime import datetime, timedelta
-from typing import List, Dict, Tuple
+from typing import List
 from flask import Flask, render_template, request
 from data_model.data_model import RepoInfo, RepoInfoDetails
 from dotenv import load_dotenv
@@ -118,8 +118,8 @@ def get_commit_data(repo_owner: str, repo_name: str, creation_date: datetime):
         'per_page': 100,
         'page': 1
     }
-    
-    days_of_week_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 
+
+    days_of_week_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
                          'Friday', 'Saturday', 'Sunday']
     commits_per_week = {}
     commits_by_day = {day: 0 for day in days_of_week_list}
