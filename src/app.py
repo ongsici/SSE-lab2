@@ -1,10 +1,10 @@
 import requests
-from process_query import process_query
 from datetime import datetime
 from typing import List
 from flask import Flask, render_template, request
-from data_model.data_model import RepoInfo, RepoInfoDetails
-from get_requests import get_commit_data, get_commit_info, get_weather
+from src.process_query import process_query
+from src.data_model.data_model import RepoInfo, RepoInfoDetails
+from src.get_requests import get_commit_data, get_commit_info, get_weather
 # from dotenv import load_dotenv
 
 app = Flask(__name__)
