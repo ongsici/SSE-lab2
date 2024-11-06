@@ -128,7 +128,7 @@ def get_commit_data(repo_owner: str, repo_name: str,
                                           'Friday', 'Saturday', 
                                           'Sunday']}
     commits_by_hour = {hour: 0 for hour in range(24)}
-    contributions_by_contributor = {}
+    contributions = {}
 
     while True:
         response = requests.get(url, params=params)
@@ -163,12 +163,12 @@ def get_commit_data(repo_owner: str, repo_name: str,
             commits_by_hour[commit_hour] += 1
 
             committer_name = commit['commit']['committer']['name']
-            contributions_by_contributor[committer_name] = \
-                contributions_by_contributor.get(committer_name, 0) + 1
+            contributions[committer_name] = \
+                contributions.get(committer_name, 0) + 1
 
         params['page'] += 1
 
-    return commits_per_week, commits_by_day, commits_by_hour, contributions_by_contributor
+    return commits_per_week, commits_by_day, commits_by_hour, contributions
 
 
 @app.route("/api_repo_info/<name>/<repo_name>", methods=["GET"])
@@ -183,27 +183,26 @@ def fetch_repo_info(name: str, repo_name: str):
             repo_data["created_at"].replace("Z", "+00:00")
         )
 
-        commits_per_week, commits_by_day, commits_by_hour, \
-        contributions_by_contributor = get_commit_data(
+        per_week, by_day, by_hour, by_contributor = get_commit_data(
             name, repo_name, creation_date
         )
 
         week_labels = []
         commits_by_week = []
 
-        for week_start in sorted(commits_per_week.keys()):
+        for week_start in sorted(per_week.keys()):
             week_labels.append(f"{week_start.strftime('%Y-%m-%d')}")
-            commits_by_week.append(commits_per_week[week_start])
+            commits_by_week.append(per_week[week_start])
 
-        commits_by_day_counts = [commits_by_day[day] for day in 
-                                 ['Monday', 'Tuesday', 'Wednesday', 
-                                  'Thursday', 'Friday', 'Saturday', 
+        commits_by_day_counts = [by_day[day] for day in
+                                 ['Monday', 'Tuesday', 'Wednesday',
+                                  'Thursday', 'Friday', 'Saturday',
                                   'Sunday']]
 
-        commits_by_hour_counts = [commits_by_hour[hour] for hour in range(24)]
+        commits_by_hour_counts = [by_hour[hour] for hour in range(24)]
 
-        contributors = list(contributions_by_contributor.keys())
-        contribution_counts = list(contributions_by_contributor.values())
+        contributors = list(by_contributor.keys())
+        contribution_counts = list(by_contributor.values())
         creation_date_str = creation_date.isoformat()
 
         repo_info_details = RepoInfoDetails(
