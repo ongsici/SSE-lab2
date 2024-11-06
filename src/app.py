@@ -32,7 +32,7 @@ def submit():
     input_age = request.form.get("age")
     input_gender = request.form.get("gender")
     input_happiness = request.form.get("happy")
-    
+
     if int(input_happiness) >= 0:
         return render_template("happy.html",
                                name=input_name,
@@ -112,9 +112,9 @@ def api_submit():
                            wind_speed=curr_wind_speed)
 
 
-def get_commit_data(repo_owner: str, repo_name: str, 
-                    creation_date: datetime) -> Tuple[Dict, Dict, Dict, 
-                                                       List[int], List[int], 
+def get_commit_data(repo_owner: str, repo_name: str,
+                    creation_date: datetime) -> Tuple[Dict, Dict, Dict,
+                                                       List[int], List[int],
                                                        Dict[str, int]]:
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits"
     params = {
@@ -123,9 +123,9 @@ def get_commit_data(repo_owner: str, repo_name: str,
     }
 
     commits_per_week = {}
-    commits_by_day = {day: 0 for day in ['Monday', 'Tuesday', 
-                                          'Wednesday', 'Thursday', 
-                                          'Friday', 'Saturday', 
+    commits_by_day = {day: 0 for day in ['Monday', 'Tuesday',
+                                          'Wednesday', 'Thursday',
+                                          'Friday', 'Saturday',
                                           'Sunday']}
     commits_by_hour = {hour: 0 for hour in range(24)}
     contributions = {}
@@ -142,8 +142,9 @@ def get_commit_data(repo_owner: str, repo_name: str,
 
         for commit in commits:
             commit_date = commit['commit']['committer']['date']
-            commit_week = datetime.strptime(commit_date, 
-                                             "%Y-%m-%dT%H:%M:%SZ").date()
+            commit_week = datetime.strptime(
+                commit_date, "%Y-%m-%dT%H:%M:%SZ"
+                ).date()
 
             if commit_week < creation_date.date():
                 continue
@@ -154,12 +155,14 @@ def get_commit_data(repo_owner: str, repo_name: str,
 
             commits_per_week[week_start] += 1
 
-            commit_day = datetime.strptime(commit_date, 
-                                            "%Y-%m-%dT%H:%M:%SZ").strftime('%A')
+            commit_day = datetime.strptime(
+                commit_date, "%Y-%m-%dT%H:%M:%SZ"
+                ).strftime('%A')
             commits_by_day[commit_day] += 1
 
-            commit_hour = datetime.strptime(commit_date, 
-                                             "%Y-%m-%dT%H:%M:%SZ").hour
+            commit_hour = datetime.strptime(
+                commit_date, "%Y-%m-%dT%H:%M:%SZ"
+                ).hour
             commits_by_hour[commit_hour] += 1
 
             committer_name = commit['commit']['committer']['name']
