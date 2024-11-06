@@ -1,5 +1,5 @@
 import pytest
-# from app import process_query, app
+from app import app
 
 
 # def test_knows_about_dinosaurs():
