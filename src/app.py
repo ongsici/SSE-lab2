@@ -47,7 +47,7 @@ def submit():
                                happy=input_happiness)
 
 
-def get_commit_info(repo_name):
+def get_commit_info(repo_name: str):
     url = f"https://api.github.com/repos/{repo_name}/commits"
     response = requests.get(url, headers=headers)
 
@@ -112,21 +112,17 @@ def api_submit():
                            wind_speed=curr_wind_speed)
 
 
-def get_commit_data(repo_owner: str, repo_name: str,
-                    creation_date: datetime) -> Tuple[Dict, Dict, Dict,
-                                                       List[int], List[int],
-                                                       Dict[str, int]]:
+def get_commit_data(repo_owner: str, repo_name: str, creation_date: datetime):
     url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits"
     params = {
         'per_page': 100,
         'page': 1
     }
-
+    
+    days_of_week_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 
+                         'Friday', 'Saturday', 'Sunday']
     commits_per_week = {}
-    commits_by_day = {day: 0 for day in ['Monday', 'Tuesday',
-                                          'Wednesday', 'Thursday',
-                                          'Friday', 'Saturday',
-                                          'Sunday']}
+    commits_by_day = {day: 0 for day in days_of_week_list}
     commits_by_hour = {hour: 0 for hour in range(24)}
     contributions = {}
 
