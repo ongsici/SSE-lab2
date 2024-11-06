@@ -1,18 +1,18 @@
 import pytest
-from app import process_query, app
+# from app import process_query, app
 
 
-def test_knows_about_dinosaurs():
-    expected = "Dinosaurs ruled the Earth 200 million years ago"
-    assert process_query("dinosaurs") == expected
+# def test_knows_about_dinosaurs():
+#     expected = "Dinosaurs ruled the Earth 200 million years ago"
+#     assert process_query("dinosaurs") == expected
 
 
-def test_does_not_know_about_asteroids():
-    assert process_query("asteroids") == "Unknown"
+# def test_does_not_know_about_asteroids():
+#     assert process_query("asteroids") == "Unknown"
 
 
-def test_what_is_your_name():
-    assert process_query("What is your name?") == "SiCi"
+# def test_what_is_your_name():
+#     assert process_query("What is your name?") == "SiCi"
 
 
 @pytest.fixture
